@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<link rel="manifest" href="manifest.json">
+
+  <meta charset="UTF-8">
+  <title>Jeu des lettres</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    body { font-family: sans-serif; text-align: center; }
+    #question { font-size: 2rem; margin: 20px; }
+    #image { width: 150px; margin: 10px; display: none; }
+    .letter {
+      display: inline-block;
+      margin: 10px;
+      padding: 15px 20px;
+      border: 1px solid #333;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    #modeButtons button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    #restartBtn, #quitFreeBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: none;
+    }
+
+    html, body {
+      overflow: hidden;
+      touch-action: none;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+#image {
+  display: block;
+  margin: 20px auto;
+  width: 150px;
+  transition: opacity 0.3s ease;
+}
+
+  </style>
+</head>
+<body>
+
+  <h1>Jeu des lettres</h1>
+<button id="homeBtn" onclick="goHome()">Retour à la page de départ</button>
+  <!-- Boutons de choix du mode -->
+  <div id="modeButtons">
+    <button onclick="startMode(30)">Mode 30 sec</button>
+    <button onclick="startMode(180)">Mode 3 min</button>
+    <button onclick="startMode(0)">Mode libre</button>
+    <button onclick="startImageMode()">Mode image → lettre</button>
+	
+
+  </div>
+
+  <div id="timer" style="font-size:1.5rem; margin:10px;"></div>
+  <div id="score" style="font-size:1.5rem; margin:10px;"></div>
+
+  <button id="quitFreeBtn">Quitter le mode libre</button>
+
+  <button id="levelBtn">Passer au niveau 2</button>
+
+  <div id="question"></div>
+  <img id="image" src="" alt="">
+  <div id="letters"></div>
+  <div id="feedback"></div>
+
+  <button id="restartBtn">Rejouer</button>
+
+  <!-- PARTIE 2 : SCRIPT -->
+  <script>
+const data = [
+  { letter: "A", img: "img/A.png" },
+  { letter: "B", img: "img/B.png" },
+  { letter: "C", img: "img/C.png" },
+  { letter: "D", img: "img/D.png" },
+  { letter: "E", img: "img/E.png" },
+  { letter: "F", img: "img/F.png" },
+  { letter: "G", img: "img/G.png" },
+  { letter: "H", img: "img/H.png" },
+  { letter: "I", img: "img/I.png" },
+  { letter: "J", img: "img/J.png" },
+  { letter: "K", img: "img/K.png" },
+  { letter: "L", img: "img/L.png" },
+  { letter: "M", img: "img/M.png" },
+  { letter: "N", img: "img/N.png" },
+  { letter: "O", img: "img/O.png" },
+  { letter: "P", img: "img/P.png" },
+  { letter: "Q", img: "img/Q.png" },
+  { letter: "R", img: "img/R.png" },
+  { letter: "S", img: "img/S.png" },
+  { letter: "T", img: "img/T.png" },
+  { letter: "U", img: "img/U.png" },
+  { letter: "V", img: "img/V.png" },
+  { letter: "W", img: "img/W.png" },
+  { letter: "X", img: "img/X.png" },
+  { letter: "Y", img: "img/Y.png" },
+  { letter: "Z", img: "img/Z.png" }
+];
+
+const objects = [
+  { word: "Avion", img: "Image/avion.png", sound: "avion" },
+  { word: "Ballon", img: "Image/ballon.png", sound: "ballon" },
+  { word: "Chat", img: "Image/chat.png", sound: "chat" },
+  { word: "Dauphin", img: "Image/dauphin.png", sound: "dauphin" },
+  { word: "Éléphant", img: "Image/elephant.png", sound: "éléphant" },
+  { word: "Fleur", img: "Image/fleur.png", sound: "fleur" },
+  { word: "Guitare", img: "Image/guitare.png", sound: "guitare" },
+  { word: "Hérisson", img: "Image/herisson.png", sound: "hérisson" },
+  { word: "Igloo", img: "Image/igloo.png", sound: "igloo" },
+  { word: "Jouet", img: "Image/jaguar.png", sound: "jaguar" },
+  { word: "Koala", img: "Image/koala.png", sound: "koala" },
+  { word: "Lapin", img: "Image/lapin.png", sound: "lapin" },
+  { word: "Maison", img: "Image/maison.png", sound: "maison" },
+  { word: "Nez", img: "Image/nez.png", sound: "nez" },
+  { word: "Orange", img: "Image/orange.png", sound: "orange" },
+  { word: "Poisson", img: "Image/poisson.png", sound: "poisson" },
+  { word: "Quille", img: "Image/quille.png", sound: "quille" },
+  { word: "Robot", img: "Image/robot.png", sound: "robot" },
+  { word: "Soleil", img: "Image/soleil.png", sound: "soleil" },
+  { word: "Tortue", img: "Image/tortue.png", sound: "tortue" },
+  { word: "Urne", img: "Image/urne.png", sound: "urne" },
+  { word: "Voiture", img: "Image/voiture.png", sound: "voiture" },
+  { word: "Wagon", img: "Image/wagon.png", sound: "wagon" },
+  { word: "Xylophone", img: "Image/xylophone.png", sound: "xylophone" },
+  { word: "Yaourt", img: "Image/yaourt.png", sound: "yaourt" },
+  { word: "Zèbre", img: "Image/zebre.png", sound: "zèbre" }
+];
+
+const questionEl = document.getElementById("question");
+const lettersEl = document.getElementById("letters");
+const feedbackEl = document.getElementById("feedback");
+const imageEl = document.getElementById("image");
+const timerEl = document.getElementById("timer");
+const scoreEl = document.getElementById("score");
+const restartBtn = document.getElementById("restartBtn");
+const quitFreeBtn = document.getElementById("quitFreeBtn");
+const modeButtons = document.getElementById("modeButtons");
+
+let level = 1;
+let target;
+let score = 0;
+let timeLeft = 0;
+let timerInterval = null;
+let mode = 0;
+let gameActive = false;
+
+function speak(text) {
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "fr-FR";
+  speechSynthesis.speak(utter);
+}
+
+function speakLetter(letter) {
+  if (letter === "Y") speak("Le I grec");
+  else speak("Le " + letter);
+}
+
+function startMode(selectedMode) {
+  mode = selectedMode;
+  modeButtons.style.display = "none";
+  restartBtn.style.display = "none";
+  quitFreeBtn.style.display = mode === 0 ? "inline-block" : "none";
+
+  score = 0;
+  scoreEl.textContent = mode === 0 ? "" : "Score : 0";
+
+  timeLeft = selectedMode;
+  timerEl.textContent = mode === 0 ? "" : "Temps restant : " + timeLeft + " sec";
+
+  gameActive = true;
+
+  if (mode !== 0) startTimer();
+
+  newRound();
+}
+
+function startTimer() {
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    timerEl.textContent = "Temps restant : " + timeLeft + " sec";
+    if (timeLeft <= 0) endGame();
+  }, 1000);
+}
+
+function endGame() {
+  gameActive = false;
+  clearInterval(timerInterval);
+  speak("Temps écoulé !");
+  questionEl.textContent = "Temps écoulé !";
+  feedbackEl.textContent = "Score : " + score;
+  restartBtn.style.display = "inline-block";
+}
+
+restartBtn.onclick = () => {
+  modeButtons.style.display = "block";
+  timerEl.textContent = "";
+  scoreEl.textContent = "";
+  feedbackEl.textContent = "";
+  questionEl.textContent = "";
+  lettersEl.innerHTML = "";
+  imageEl.style.display = "none";
+  restartBtn.style.display = "none";
+};
+
+quitFreeBtn.onclick = () => {
+  modeButtons.style.display = "block";
+  quitFreeBtn.style.display = "none";
+  scoreEl.textContent = "";
+  timerEl.textContent = "";
+  feedbackEl.textContent = "";
+  questionEl.textContent = "";
+  lettersEl.innerHTML = "";
+  imageEl.style.display = "none";
+};
+
+function newRound() {
+  if (!gameActive) return;
+
+  lettersEl.innerHTML = "";
+  feedbackEl.textContent = "";
+  imageEl.style.display = "none";
+
+  // MODE 3 : Image → Lettre
+  if (level === 3) {
+
+    const item = objects[Math.floor(Math.random() * objects.length)];
+    target = item.word[0].toUpperCase();
+
+    questionEl.textContent = "Quelle est la première lettre du mot ?";
+    imageEl.src = item.img;
+    imageEl.style.display = "block";
+
+    speak(item.sound);
+
+    const pool = [...data].sort(() => Math.random() - 0.5).slice(0, 5);
+    if (!pool.find(x => x.letter === target)) pool[0] = { letter: target };
+    pool.sort(() => Math.random() - 0.5);
+
+    pool.forEach(obj => {
+      const btn = document.createElement("button");
+      btn.textContent = obj.letter;
+      btn.className = "letter";
+
+      btn.onclick = () => {
+        if (!gameActive) return;
+        if (obj.letter === target) {
+          feedbackEl.textContent = "😄";
+          score++;
+          scoreEl.textContent = "Score : " + score;
+          speak("Bravo !");
+          setTimeout(newRound, 800);
+        } else {
+          feedbackEl.textContent = "😕";
+        }
+      };
+
+      lettersEl.appendChild(btn);
+    });
+
+    return;
+  }
+
+  // MODE 1 & MODE 2
+  const item = data[Math.floor(Math.random() * data.length)];
+  target = item.letter;
+
+  if (level === 1) {
+    questionEl.textContent = "Clique sur la lettre : " + target;
+    imageEl.src = item.img;
+    imageEl.style.display = "block";
+    speakLetter(item.letter);
+  }
+
+  if (level === 2) {
+    questionEl.textContent = "Écoute et choisis la bonne lettre";
+    speakLetter(item.letter);
+  }
+
+  const pool = [...data].sort(() => Math.random() - 0.5).slice(0, 5);
+  if (!pool.find(x => x.letter === target)) pool[0] = item;
+  pool.sort(() => Math.random() - 0.5);
+
+  pool.forEach(obj => {
+    const btn = document.createElement("button");
+    btn.textContent = obj.letter;
+    btn.className = "letter";
+
+    btn.onclick = () => {
+      if (!gameActive) return;
+
+      if (obj.letter === target) {
+        feedbackEl.textContent = "😄";
+        if (mode !== 0) {
+          score++;
+          scoreEl.textContent = "Score : " + score;
+        }
+        speak("Bravo !");
+        setTimeout(newRound, 800);
+      } else {
+        feedbackEl.textContent = "😕";
+      }
+    };
+
+    lettersEl.appendChild(btn);
+  });
+}
+
+levelBtn.onclick = () => {
+  level = level === 1 ? 2 : 1;
+  levelBtn.textContent = level === 1 ? "Passer au niveau 2" : "Passer au niveau 1";
+  newRound();
+};
+
+function startImageMode() {
+  mode = "image";
+  level = 3;
+  score = 0;
+
+  modeButtons.style.display = "none";
+  restartBtn.style.display = "none";
+  quitFreeBtn.style.display = "none";
+
+  scoreEl.textContent = "Score : 0";
+  timerEl.textContent = "";
+
+  gameActive = true;
+
+  newRound();
+}
+function goHome() {
+  modeButtons.style.display = "block";
+  restartBtn.style.display = "none";
+  quitFreeBtn.style.display = "none";
+  scoreEl.textContent = "";
+  timerEl.textContent = "";
+  feedbackEl.textContent = "";
+  questionEl.textContent = "";
+  lettersEl.innerHTML = "";
+  imageEl.style.display = "none";
+  document.getElementById("homeBtn").style.display = "none";
+  gameActive = false;
+}
+
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+
+</body>
+</html>
+
+
