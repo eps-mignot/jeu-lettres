@@ -9,52 +9,139 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <style>
-    body { font-family: sans-serif; text-align: center; }
-    #question { font-size: 2rem; margin: 20px; }
-    #image { width: 150px; margin: 10px; display: none; }
-    .letter {
-      display: inline-block;
-      margin: 10px;
-      padding: 15px 20px;
-      border: 1px solid #333;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-    #modeButtons button {
-      margin: 5px;
-      padding: 10px 20px;
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-    #restartBtn, #quitFreeBtn {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: none;
-    }
+    body {
+  font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+  background: linear-gradient(135deg, #FFE29F, #FFA99F, #FF719A);
+  min-height: 100vh;
+}
 
-    html, body {
-      overflow: hidden;
-      touch-action: none;
-      margin: 0;
-      padding: 0;
-      height: 100%;
-    }
+h1 {
+  color: #fff;
+  text-shadow: 2px 2px 0 #d63384, -1px -1px 0 #d63384;
+  font-size: 2.2rem;
+  margin-top: 20px;
+}
+
+#question {
+  font-size: 1.8rem;
+  margin: 20px;
+  color: #4a2c6d;
+  font-weight: bold;
+}
 
 #image {
   display: block;
   margin: 20px auto;
   width: 150px;
-  transition: opacity 0.3s ease;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
+.letter {
+  display: inline-block;
+  margin: 10px;
+  padding: 18px 26px;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  background: #fff;
+  color: #d63384;
+  box-shadow: 0 4px 0 #c9a4d1;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.letter:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 #c9a4d1;
+}
+.letter:hover {
+  background: #fff0f6;
+}
+
+#modeButtons button {
+  margin: 8px;
+  padding: 14px 24px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  color: #fff;
+  background: #6a4c93;
+  box-shadow: 0 4px 0 #4a3468;
+  transition: transform 0.15s ease;
+}
+#modeButtons button:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+#modeButtons button:nth-child(1) { background: #ff6b6b; box-shadow: 0 4px 0 #c74545; }
+#modeButtons button:nth-child(2) { background: #4ecdc4; box-shadow: 0 4px 0 #2f9d95; }
+#modeButtons button:nth-child(3) { background: #ffd93d; box-shadow: 0 4px 0 #d4ab00; color: #4a2c6d; }
+#modeButtons button:nth-child(4) { background: #6a4c93; box-shadow: 0 4px 0 #4a3468; }
+
+#restartBtn, #quitFreeBtn, #levelBtn {
+  margin-top: 20px;
+  padding: 12px 22px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  background: #fff;
+  color: #6a4c93;
+  box-shadow: 0 3px 0 #ccc;
+  display: none;
+}
+
+#homeBtn {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  background: #ff4757;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  padding: 10px 18px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #b0353f;
+  z-index: 10;
+}
+#homeBtn:active {
+  transform: translateY(3px);
+  box-shadow: none;
+}
+
+#feedback {
+  font-size: 3rem;
+  margin-top: 10px;
+  animation: pop 0.3s ease;
+}
+@keyframes pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+#score, #timer {
+  font-size: 1.4rem;
+  color: #4a2c6d;
+  font-weight: bold;
+}
   </style>
 </head>
 <body>
 
   <h1>Jeu des lettres</h1>
-<button id="homeBtn" onclick="goHome()">Retour à la page de départ</button>
+<button id="homeBtn" onclick="goHome()" style="display:none;">⏹ Stop</button>
   <!-- Boutons de choix du mode -->
   <div id="modeButtons">
     <button onclick="startMode(30)">Mode 30 sec</button>
@@ -172,6 +259,7 @@ function startMode(selectedMode) {
   mode = selectedMode;
   modeButtons.style.display = "none";
   restartBtn.style.display = "none";
+  document.getElementById("homeBtn").style.display = "inline-block";
   quitFreeBtn.style.display = mode === 0 ? "inline-block" : "none";
 
   score = 0;
@@ -331,6 +419,7 @@ function startImageMode() {
 
   modeButtons.style.display = "none";
   restartBtn.style.display = "none";
+  document.getElementById("homeBtn").style.display = "inline-block";
   quitFreeBtn.style.display = "none";
 
   scoreEl.textContent = "Score : 0";
