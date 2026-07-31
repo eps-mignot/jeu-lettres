@@ -257,6 +257,7 @@ function speakLetter(letter) {
 
 function startMode(selectedMode) {
   mode = selectedMode;
+  level = 1; // ← ajout : on repart toujours du niveau 1 en quittant le mode image
   modeButtons.style.display = "none";
   restartBtn.style.display = "none";
   document.getElementById("homeBtn").style.display = "inline-block";
