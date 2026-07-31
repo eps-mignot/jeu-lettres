@@ -273,6 +273,7 @@ function startMode(selectedMode) {
   modeButtons.style.display = "none";
   restartBtn.style.display = "none";
   document.getElementById("homeBtn").style.display = "inline-block";
+  document.getElementById("levelBtn").style.display = "inline-block"; // ← ajout
   quitFreeBtn.style.display = mode === 0 ? "inline-block" : "none";
 
   score = 0;
@@ -433,6 +434,7 @@ function startImageMode() {
   modeButtons.style.display = "none";
   restartBtn.style.display = "none";
   document.getElementById("homeBtn").style.display = "inline-block";
+  document.getElementById("levelBtn").style.display = "none";
   quitFreeBtn.style.display = "none";
 
   scoreEl.textContent = "Score : 0";
