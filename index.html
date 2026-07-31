@@ -341,6 +341,10 @@ function startImageMode() {
   newRound();
 }
 function goHome() {
+  clearInterval(timerInterval);
+  speechSynthesis.cancel();
+  gameActive = false;
+
   modeButtons.style.display = "block";
   restartBtn.style.display = "none";
   quitFreeBtn.style.display = "none";
@@ -351,7 +355,6 @@ function goHome() {
   lettersEl.innerHTML = "";
   imageEl.style.display = "none";
   document.getElementById("homeBtn").style.display = "none";
-  gameActive = false;
 }
 
 </script>
