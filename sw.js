@@ -1,4 +1,4 @@
-const CACHE_NAME = "jeu-lettres-cache-v2";
+const CACHE_NAME = "jeu-lettres-cache-v3";
 const ASSETS = [
   "./",
   "index.html",
